@@ -1,0 +1,435 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>reveal.js</title>
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/black.css">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+    </head>
+    <body>
+
+        <div class="reveal">
+            <div class="slides">
+
+                <!-- INTRO -->
+
+                <section>
+                    <h4><span style="color: orange">Control Patterns</span> as <span style="color: orange">Functions</span> in <span style="color: green">Python</span></h4>
+                    <aside class="notes">
+                        <p>Primarily, this presentation will be about <span style="color: orange">Control Patterns as Functions</span> in <span style="color: green">Python</span>.</p>
+                        <p>Note, I'll be omitting Python comprehsions until the end of the presentation.</p>
+                        <p>Also, some of the language and function ideas in this presentation were borrowed or inspired from the python lib toolz.</p>
+                    </aside>
+                </section>
+
+                <section>
+                    <h3>Topic Dependencies:</h3>
+                    <ol>
+                        <li>Curring</li>
+                        <li>Functional Composition</li>
+                    </ol>
+                    <aside class="notes">
+                        <p>
+                            Portions of this topic has a few dependencies, inluding currying and functional
+                            composition. We'll touch on these topics in a bit.
+                        </p>
+                    </aside>
+                </section>
+
+                <!-- CURRING -->
+
+                <section style="text-align: left">
+                    <h4 style="color: orange">Curring</h4>
+                    <p>
+                        Curring is a technique where a function with more than one argument returns a function if less
+                        than all the arguments are provided.
+                    </p>
+                    <aside class="notes">
+                        <p>
+                            My laymen definition of the technique.
+                        </p>
+                    </aside>
+                </section>
+                    
+                <section style="text-align: left">
+                    <p>
+                        Here is an example of <span style="color: orange">currying</span> a function:
+                    </p>
+                    <pre><code data-trim data-noescape>
+                    from operator import mul
+                    mul = curry(mul)
+                    # return new function with the first "pre argued"
+                    double = mul(2)
+                    double(10)
+                    # returns 20
+                    </code></pre>
+                    <aside class="notes">
+                        <p>
+                            Lets just imagine we a function called curry (it is hairy to implement):
+                        </p>
+                        <p>
+                            That is pretty much it. Once all the args of the orignial function have been
+                            argued, the function executes.
+                        </p>
+                        <p>
+                            Any questions before I move on to functional composition?
+                        </p>
+                    </aside>  
+                </section>
+
+                <!-- FUNCTIONAL COMPOSITION -->
+
+                <section style="text-align: left">
+                    <h4 style="color: orange">Functional Composition</h4>
+                    <p>
+                        Composing (or combining) more than one function into a new function.
+                    </p>
+                    <aside class="notes">
+                        <p>
+                            Sort of like creating a function from a series of pipes.
+                        </p>
+                        <p>
+                            This is best explained by way of example.
+                        </p>
+                    </aside>
+                </section>
+
+                <section style="text-align: left">
+                    <p>
+                        Here is my attempt at a compose function:
+                    </p>
+                    <pre><code data-trim data-noescape>
+                    def compose(*fns):
+                        first = fns[-1]
+                        fns = reversed(fns[:-1])
+                        def _compose(*args, **kwargs):
+                            output = first(*args, **kwargs)
+                            for fn in fns:
+                                output = fn(output)
+                            return output
+                        return _compose
+                    </code></pre>
+                    <aside class="notes">
+                        <p>
+                            Now, to use it.
+                        </p>
+                    </aside>  
+                </section>
+                    
+                <section style="text-align: left">
+                    <p>
+                        Using compose to create a function for performing math on strings.
+                    </p>
+                    <pre><code data-trim data-noescape>
+                    from operator import mul
+                    mul = curry(mul)
+                    # return new function with the first "pre argued"
+                    double = mul(2)
+                    # same as: str_double = lambda s: str(double(int(s)))
+                    str_double = compose(str, double, int) 
+                    double('10')
+                    # returns '20'
+                    </code></pre>
+                    <aside class="notes">
+                        <p>
+                            Let say we wanted to be able to perform math on strings.
+                        </p>
+                        <p>
+                            Currying and Functional composition really maximize the reusablility of functions.
+                        </p>
+                        <p> QUESTIONS </p>
+                        <p> 
+                            Now that we've convered Currying and Function Composition, onto Control Patterns as Functions.
+                        </p>
+                    </aside>  
+                </section>
+
+                <!-- CONTROL PATTERNS -->
+
+                <section>
+                    <p>
+                        So, what are <span style="color: orange">Control Patterns as Functions</span>?
+                    </p>
+                    <aside class="notes">
+                        <p>
+                            All programs are made up of three seperate parts. Data, Computation, and Control Flow.
+                        </p>    
+                    </aside>
+                </section>
+
+                <section style="text-align: left">
+                    <p>  
+                        A control pattern is using one or more control flow structures such as <span style="color: orange">for</span>, 
+                        <span style="color: orange">while</span>, <span style="color: orange">if</span>, <span style="color: orange">else</span>,
+                        etc. in order to move data with similar characteristics in a consistent and particular way.
+                    </p>
+                    <aside class="notes">
+                        
+                    </aside>            
+                </section>
+
+                <section style="text-align: left">
+                    <p>  
+                        <span style="color: orange">Control Patterns as Functions</span> are simply these control patterns implemented
+                        as functions.
+                    </p>
+                    <aside class="notes">
+                        <p>
+                            Often these are higher order functions that recieve another function as an argument to perform
+                            some computation on the data at predetermined steps/stages.
+                        </p>
+                        <p>
+                            You are all already familiar with some of these functions.
+                        </p>
+                    </aside>            
+                </section>
+
+                <section style="text-align: left">
+                    <h4>What is the control pattern in use below?</h4>
+                    <pre><code data-trim data-noescape>
+                    numbers = [1, 2, 3]
+                    numbers_doubled = []
+                    for n in numbers:
+                        numbers_doubled.append(n * 2)
+                    </code></pre>
+                </section>
+
+                <section>
+                    <p style="color: orange">Map</p>
+                    <pre><code data-trim data-noescape>
+                    # python 2 map
+                    def map(iterable, fn):
+                        iterable_new = []
+                        for i in iterable:
+                            iterable_new.append(fn(i))
+                        return iterable_new
+
+                    # python 3 map
+                    def map(iterable, fn):
+                        for i in iterable:
+                            yield fn(i)
+                    </code></pre>
+                </section>
+
+                <section style="text-align: left">
+                    <p>Same code using the map function.</p>
+                    <pre><code data-trim data-noescape>
+                    numbers = [1, 2, 3]
+                    numbers_doubled = map(lambda n: n * 2, numbers)
+                    </code></pre>
+                    <aside class="notes">
+                        The map function can be a basis for a slew of other control pattern functions. Here are some examples: 
+                    </aside>
+                </section>
+
+                <section>
+                    <p>Collect the balances from this list of accounts.</p>
+                    <pre><code data-trim data-noescape>
+                    accounts = [{'name': 'Bob Jones', 'balance': 1001},
+                                {'name': 'Jimmy Joe', 'balance': 7223},
+                                {'name': 'Nolan Ninny', 'balance': -50}]
+                    </code></pre>
+                </section>
+
+                <section>
+                    <pre><code data-trim data-noescape>
+                    balances = map(lambda a: a.get('balance', 0), accounts)
+                    </code></pre>
+                    <aside class="notes">
+                        Map can, of course, be used to extract balances like so. But this is itself a common pattern based on map: iterate over
+                        list of dicts, extract value by key, and return new list of values.
+
+                        This pattern is common enough to turn it into its own function.
+                    </aside>
+                </section>
+
+                <section style="text-align: left">
+                    <p>First, here is a curryable function for getting a value by key or index from a list-like or dict-like data structure.</p>
+                    <pre><code data-trim data-noescape>
+                    def get(i, d, default=None):
+                        if hasattr(d, 'get'):
+                            return d.get(i, default)
+                        else:
+                            try:
+                                d.__getitem__(i)
+                            except (IndexError, KeyError):
+                                return default
+
+                    get = curry(get)
+                    </code></pre>
+                    <aside class="notes">
+                    </aside>
+                </section>
+
+                <section style="text-align: left">
+                    <p>Now <span style="color: orange">curry</span> them together:</p>
+                    <pre><code data-trim data-noescape>
+                    map = curry(map)
+                    get_balances = map(get('balance'))
+                    # now
+                    balances = get_balances(accounts)
+                    # returns: balances == [1001, 7223, -50]
+                    </code></pre>
+                    <aside class="notes">
+                        After having implemented the constituent functions, we can get new functionality just by stitching functions together.
+                    </aside>
+                </section>
+
+                <section style="text-align: left">
+                    <p>We can compose the new function together with another for additional functionality.</p>
+                    <pre><code data-trim data-noescape>
+                    reduce = curry(reduce)
+                    sum = reduce(lambda a, b: a + b) # also python built in
+                    get_sum_all_bal = compose(sum, get_balances)
+                    sum_of_all_bal = get_all_bal_sum(accounts)
+                    # returns: sum_of_all_bal == 8174
+                    </code></pre>
+                    <aside class="notes">
+                        <p>Any questions?</p>
+                        <p>On to the next general pattern.</p>
+                    </aside>
+                </section>
+
+                <section style="text-align: left">
+                    <h4>What is the control pattern in use below?</h4>
+                    <pre><code data-trim data-noescape>
+                    numbers = [1, 2, 3]
+                    numbers_odd = []
+                    for n in numbers:
+                        if n % 2:
+                            numbers_odd.append(n)
+                    </code></pre>
+                </section>
+
+                <section>
+                    <p style="color: orange">Filter</p>
+                    <pre><code data-trim data-noescape>
+                    # python 2 filter
+                    def filter(iterable, fn):
+                        iterable_new = []
+                        for i in iterable:
+                            if fn(i):
+                                iterable_new(i)
+                        return iterable_new
+
+                    # python 3 filter
+                    def filter(iterable, fn):
+                        for i in iterable:
+                            if fn(i):
+                                yield i
+                    </code></pre>
+                </section>
+
+                <section style="text-align: left">
+                    <p>Same code using the filter function.</p>
+                    <pre><code data-trim data-noescape>
+                    numbers = [1, 2, 3]
+                    numbers_odd = filter(lambda n: n % 2, numbers)
+                    # returns: [1, 3]
+                    </code></pre>
+                </section>
+
+                <section style="text-align: left">
+                    <p></p>
+                    <pre><code data-trim data-noescape>
+                    filter = curry(filter)
+                    numbers_odd = filter(lambda n: n % 2)
+                    </code></pre>
+                    <pre><code data-trim data-noescape>
+                    numbers = [1, 2, 3]
+                    get_odd_numbers = get_odd_numbers(numbers)
+                    # returns: [1, 3]
+                    </code></pre>
+                </section>
+
+                <section style="text-align: left">
+                    <p>We can use map and filter together on the dataset below.</p>
+                    <pre><code data-trim data-noescape>
+                    accounts = [{'name': 'Bob Jones', 'balance': 1001},
+                                {'name': 'Jimmy Joe', 'balance': 7223},
+                                {'name': 'Nolan Ninny', 'balance': -50}]
+                    </code></pre>
+                </section>
+
+                <section style="text-align: left">
+                    <p>Get sum of accounts with negative balances.</p>
+                    <pre><code data-trim data-noescape>
+                    get_acc_w_neg_bals = filter(lambda a: a.get('balance') < 0)
+                    get_sum_neg_bals = compose(sum_of_all_bal,
+                                               get_acc_w_neg_bals)
+                    # returns: -50
+                    </code></pre>
+                </section>
+
+                <section style="text-align: left">
+                    <p>
+                        In <span style="color: green">Python</span>, the <span style="color: orange">map/filter</span> patterns can be expressed with syntax through comprehsions.
+                    </p>
+                    <pre><code data-trim data-noescape>
+                    numbers = [1, 2, 3]
+                    numbers_doubled = [n * 2 for n in numbers]
+                    numbers_odd = [n % 2 for n in numbers]
+                    </code></pre>
+                    <aside class="notes">
+                        <p>
+                            The pattern of looping over an iterable data structure, manipulating the
+                            original data structure and/or its data in some way and returning the result
+                            is such a common one that in Python the pattern is syntax through comphresions.
+                        </p>
+                        <p>
+                            However, it is my opinion using functions for common control flow patterns is better for a few reasons.
+                        </p>
+                    </aside>
+                </section>
+
+                <section>
+                    <ol>
+                        <li>As functions the pattern at play is immediatly clear.</li>
+                        <li>Easy and reliably testable if pure.</li>
+                        <li>Functions are reusable.</li>
+                        <li>Functions are composable.</li>
+                        <li>Functions (pure) are often serializable.</li>
+                        <li>Control Pattern Functions are often language agnostic.</li>
+                    </ol>
+                    <aside class="notes">
+                        <p>Despite my <em>opinion</em>, I like comprehsions in Python. However, I default to functional equivelent.</p>
+                    </aside>
+                </section>
+
+            </div>
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.js"></script>
+
+        <script>
+            Reveal.initialize({
+                dependencies: [
+                    { src: 'plugin/markdown/marked.js' },
+                    { src: 'plugin/markdown/markdown.js' },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { 
+                        hljs.configure({languages: ['python']});
+                        hljs.initHighlightingOnLoad();
+                    }}
+                ]
+            });
+        </script>
+
+    </body>
+</html>
